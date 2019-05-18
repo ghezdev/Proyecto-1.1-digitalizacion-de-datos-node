@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 
 //Base de datos
 const {database} = require('./keys');
@@ -20,7 +21,8 @@ app.use(morgan('dev'));
 //Variables globales
 
 //Rutas
-app.use('/api/',require('/router/index'));
+app.use('/api/',require('./router/index'));
+app.use('/api/alumno/',require('./router/alumno'));
 
 //Archivos estaticos
 app.use(express.static(path.join(__dirname,'public')));
@@ -33,6 +35,6 @@ app.listen(app.get('port'),(req,res) =>{
 //Error Handler
 app.use(function(err, req, res, next) {
     if (!err.statusCode) err.statusCode = 500;
-    res.status(err.statusCode).send(err.message); 
+    res.status(err.statusCode).send(err.message);
     next();
 });
