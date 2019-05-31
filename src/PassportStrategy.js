@@ -7,8 +7,9 @@ const helpers = require('./helpers');
  //Estrategia local de inicio de sesion
 passport.use('local-signin', new LocalStrategy({
     usernameField:'username',
-    passwordField:'password'
-}, async(username,password,done) =>{
+    passwordField:'password',
+    passReqToCallback: true
+}, async(req,username,password,done) =>{
     const usuarios = await pool.query('SELECT * FROM usuarios WHERE username = ?',[username]);
     if(usuarios.length > 0){
         const user = usuarios[0];
@@ -26,15 +27,17 @@ passport.use('local-signin', new LocalStrategy({
 //Estrategia local de registro
 passport.use('local-signup', new LocalStrategy({
     usernameField:'username',
-    passwordField:'password'
-},async(username,password,done)=>{
+    passwordField:'password',
+    passReqToCallback: true
+},async(req,username,password,done)=>{
     const newUser = {
         username,
         password
     }
     newUser.password = await helpers.encryptPassword(password);
-    const user = await pool.query('INSERT INTO usuarios SET ?',[newUser]);
+    //const user = await pool.query('INSERT INTO usuarios SET ?',[newUser]);
     newUser.id = user.insertID;
+    console.log(newUser);
     return done(null,newUser);
 }));
 

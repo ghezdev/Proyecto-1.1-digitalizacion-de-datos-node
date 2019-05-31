@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const passport = require('passport');
+const path = require('path');
 const {isLoggedIn, NotLoggedIn} = require('../autenticacion');
 
 //  --GET--  //
@@ -7,19 +8,24 @@ const {isLoggedIn, NotLoggedIn} = require('../autenticacion');
 //Pagina inicial
 router.get('/',(req,res,next)=>{
     res.send('Api index');
-    res.end();
+});
+
+//Pagina prueba
+router.get('/prueba1',isLoggedIn,(req,res,next)=>{
+    res.set('Content-Type','text/html');
+    res.status(200).sendFile(path.join(__dirname,'../public/prueba.html'));
 });
 
 //Registrarse
 router.get('/signup',NotLoggedIn,(req,res,next)=>{
-    res.send('Signup');
-    res.end();
+    res.set('Content-Type','text/html');
+    res.status(200).sendFile(path.join(__dirname,'../public/signup.html'));
 });
 
 //Iniciar sesion
 router.get('/signin',NotLoggedIn,(req,res,next)=>{
-    res.send('signin');
-    res.end();
+    res.set('Content-Type','text/html');
+    res.status(200).sendFile(path.join(__dirname,'../public/login.html'));
 });
 
 //cerrar sesion
