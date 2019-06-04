@@ -5,28 +5,28 @@ const {isLoggedIn, NotLoggedIn} = require('../autenticacion');
 
 // --GET-- //
 
-// Leer lista de autoridades
+// Leer lista de Dia - Horarios
 router.get('/',IsLoggedIn,async(req, res, next) =>
 {
-    const autoridades = await pool.query('SELECT * FROM Autoridades')
+    const diaHorarios = await pool.query('SELECT * FROM Dia_Horario')
     .catch(err => next(err));
-    res.status(200).send({autoridades});
+    res.status(200).send({diaHorarios});
 });
 
 
 // --POST-- //
 
-// Agregar Autoridad
+// Agregar Dia - Horarios
 router.post('/add',IsLoggedIn,(req, res, next) =>
 {
-    res.send('Agregar autoridad');
+    res.send('Agregar Dia-Horarios');
 });
 
 
-// Actualizar Autoridad
+// Actualizar Dia - Horarios
 router.post('/update',IsLoggedIn,(req, res, next) => 
 {
-    res.send('Actualizar autoridad');
+    res.send('Actualizar Dia-Horarios');
 });
 
 module.exports = router;

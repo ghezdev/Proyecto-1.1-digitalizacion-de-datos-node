@@ -5,7 +5,7 @@ const {isLoggedIn, NotLoggedIn} = require('../autenticacion');
 //  --GET--  //
 
 //Leer lista de alumnos
-router.get('/',isLoggedIn,async(req,res,next)=>{
+router.get('/',async(req,res,next)=>{
     const alumnos = await pool.query('SELECT * FROM alumno')
     .catch(err=> next(err));
     res.status(200).send({alumnos});
