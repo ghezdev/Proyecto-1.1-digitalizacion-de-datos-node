@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const passport = require('passport');
+const pool = require('../database');
 const {isLoggedIn, NotLoggedIn} = require('../autenticacion');
 
 //  --GET--  //
@@ -30,9 +31,9 @@ router.get('/logout',isLoggedIn,(req,res)=>{
 //  --POST--  //
 
 //Registrarse
-router.post('/signup', passport.authenticate('local-signup',{
-    successRedirect:'/api/',
-    failureRedirect:'/api/signup'
+router.post('/signup',passport.authenticate('local-signup',{
+            successRedirect:'/api/',
+            failureRedirect:'/api/signup'
 }));
 
 router.post('/signin', passport.authenticate('local-signin',{
