@@ -33,6 +33,16 @@ app.use(passport.session());
 //Rutas
 app.use('/api/',require('./router/index'));
 app.use('/api/alumno/',require('./router/alumno'));
+app.use('/api/autoridad/',require('./router/autoridad'));
+app.use('/api/acta_cursada/',require('./router/acta_cursada'));
+app.use('/api/acta_previa/',require('./router/acta_previa'));
+app.use('/api/contacto_alumno/',require('./router/contacto_alumno'));
+app.use('/api/dia_horario/',require('./router/dia_horario'));
+app.use('/api/division/',require('./router/division'));
+app.use('/api/materia/',require('./router/materia'));
+app.use('/api/plan_estudios/',require('./router/plan_estudios'));
+app.use('/api/rol/',require('./router/rol'));
+
 
 //Archivos estaticos
 app.use(express.static(path.join(__dirname,'/public')));
