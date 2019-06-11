@@ -16,19 +16,16 @@ router.get('/',isLoggedIn,async(req,res,next)=>{
 //Agregar Alumno
 router.post('/add',(req,res,next)=>{
     res.send('Api Alumno');
-    res.end();
 });
 
 //Actualizar Alumno
 router.post('/update',(req,res,next)=>{
     res.send('Api Alumno');
-    res.end();
 });
 
 //Eliminar Alumno
 router.post('/delete',(req,res,next)=>{
     res.send('Api Alumno');
-    res.end();
 });
 
 module.exports = router;
