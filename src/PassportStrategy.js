@@ -10,11 +10,11 @@ passport.use('local-signin', new LocalStrategy({
     passwordField:'password'
 }, async(username,password,done) =>{
     const usuarios = await pool.query('SELECT * FROM autoridades WHERE username = ?',[username]);
-    if(usuarios.length > 0){
+    if(typeof(usuarios) != 'undefined'){
         const user = usuarios[0];
         const validPassword = await helpers.matchPassword(password,user.password);
         if(validPassword){
-            done(null,user);
+            done(null,user.idAutoridad);
         }else{
             done(null,false);
         }
@@ -30,20 +30,26 @@ passport.use('local-signup', new LocalStrategy({
     passReqToCallback: true
 },async(req,username,password,done)=>{
     const {idAutoridad} = req.body;
-    const user = await pool.query('SELECT * FROM autoridades WHERE idAutoridad = ?',[idAutoridad]);
-    const userObject = user[0];
+    const userArray = await pool.query('SELECT * FROM autoridades WHERE idAutoridad = ?',[idAutoridad]);
+    const user = userArray[0];
+
+    //Si el usuario ya está registrado
+    if(user.password){
+        return done(null,false);
+    }
+    
     const newPassword = await helpers.encryptPassword(password);
-    userObject.username = username;
-    userObject.password = newPassword;
-    await pool.query('UPDATE autoridades SET ? WHERE idAutoridad = ?',[userObject,idAutoridad]);
-    return done(null,userObject);
+    user.username = username;
+    user.password = newPassword;
+    await pool.query('UPDATE autoridades SET ? WHERE idAutoridad = ?',[user,idAutoridad]);
+    return done(null,user);
 }));
 
-passport.serializeUser((user,done)=>{
-    done(null,user.idAutoridad);
+passport.serializeUser((idAutoridad,done)=>{
+    done(null,idAutoridad);
 });
 
 passport.deserializeUser(async(idAutoridad,done)=>{
-    const usuario = pool.query('SELECT * FROM autoridades WHERE idAutoridad = ?',[idAutoridad]);
+    const usuario = await pool.query('SELECT * FROM autoridades WHERE idAutoridad = ?',[idAutoridad]);
     done(null,usuario[0]);
 });
