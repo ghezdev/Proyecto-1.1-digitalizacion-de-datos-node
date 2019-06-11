@@ -18,7 +18,6 @@ router.get('/signup',NotLoggedIn,(req,res,next)=>{
 
 //Iniciar sesion
 router.get('/signin',NotLoggedIn,(req,res,next)=>{
-    console.log(req.isAuthenticated());
     res.sendFile(path.join(__dirname,'../public/login.html'));
 });
 
