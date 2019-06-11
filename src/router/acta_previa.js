@@ -13,20 +13,37 @@ router.get('/',IsLoggedIn,async(req, res, next) =>
     res.status(200).send({actaPrevias});
 });
 
+router.get('/:idActaPrevia',IsLoggedIn,async(req, res, next) =>
+{
+    const {idActaPrevia} = req.body;
+    const arrayActaPrevia = await pool.query('SELECT * FROM Acta_Previa WHERE idActaPrevia = ?',[idActaPrevia]);
+    res.send(arrayActaPrevia);
+});
+
 
 // --POST-- //
 
 // Agregar Acta previa
-router.get('/add',IsLoggedIn,(req, res, next) =>
+router.post('/add',IsLoggedIn,async(req, res, next) =>
 {
-    res.send('Agregar acta previa');
+    const {tipo, fechaCierre} = req.body;
+    const newActaPrevia = {
+        tipo,
+        fechaCierre
+    }
+    await pool.query('INSERT INTO Acta_Previa SET ?', [newActaPrevia]);
 });
 
 
 // Actualizar Acta previa
-router.get('/update',IsLoggedIn,(req, res, next) =>
+router.post('/update',IsLoggedIn,async(req, res, next) =>
 {
-    res.send('Actualizar acta previa');
+    const {idActaPrevia, tipo, fechaCierre} = req.body;
+    const newActaPrevia = {
+        tipo,
+        fechaCierre
+    }
+    await pool.query('UPDATE Acta_Previa SET ? WHERE idActaPrevia = ?', [newActaPrevia, idActaPrevia]);
 });
 
 module.exports = router;

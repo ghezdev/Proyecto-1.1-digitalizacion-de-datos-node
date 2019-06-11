@@ -13,26 +13,40 @@ router.get('/',IsLoggedIn,async(req, res, next) =>
     res.status(200).send({actaCursadas});
 });
 
+router.get('/:idActaCursada',IsLoggedIn,(req, res, next) =>
+{
+    const {idActaCursada} = req.body;
+    const arrayActaCursada = await pool.query('SELECT * FROM Acta_Cursada WHERE idActaCursada = ?',[idActaCursada]);
+    res.send(arrayActaCursada);
+});
+
 
 // --POST-- //
 
 // Agregar Actas Cursadas
-router.get('/add',IsLoggedIn,(req, res, next) =>
+router.post('/add',IsLoggedIn,(req, res, next) =>
 {
-    const {idActa,wea} = req.body;
+    const {periodo, nota, fechaCierre} = req.body;
     const newActaCursada = {
-        idActa,
-        wea
+        periodo,
+        nota,
+        fechaCierre
     }
     await pool.query('INSERT INTO Acta_Cursada SET ?',[newActaCursada]);
-    res.send('Agregar Actas Cursadas');
+    res.send(newActaCursada);
 });
 
 
 // Actualizar Actas Cursadas
-router.get('/update',IsLoggedIn,(req, res, next) =>
+router.post('/update',IsLoggedIn,(req, res, next) =>
 {
-    res.send('Actualizar Actas Cursadas');
+    const {idActaCursada, periodo, nota, fechaCierre} = req.body;
+    const newActaCursada = {
+        periodo,
+        nota,
+        fechaCierre
+    }
+    await pool.query('UPDATE Acta_Cursada SET ? WHERE idActaCursada = ?',[newActaCursada, idActaCursada]);
 });
 
 module.exports = router;
