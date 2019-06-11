@@ -35,7 +35,7 @@ app.use('/api/',require('./router/index'));
 app.use('/api/alumno/',require('./router/alumno'));
 
 //Archivos estaticos
-app.use(express.static(path.join(__dirname,'public')));
+app.use(express.static(path.join(__dirname,'/public')));
 
 //Inicializar servidor
 app.listen(app.get('port'),(req,res) =>{
