@@ -13,20 +13,39 @@ router.get('/',IsLoggedIn,async(req, res, next) =>
     res.status(200).send({diaHorarios});
 });
 
+router.get('/:idHorario',IsLoggedIn,(req, res, next) => 
+{
+    const {idHorario} = req.body;
+    const arrayHorario = await pool.query('SELECT * FROM Dia_Horario WHERE idHorario = ?', [idHorario]);
+    res.send(arrayHorario);
+});
+
 
 // --POST-- //
 
 // Agregar Dia - Horarios
-router.post('/add',IsLoggedIn,(req, res, next) =>
+router.post('/add',IsLoggedIn,async(req, res, next) =>
 {
-    res.send('Agregar Dia-Horarios');
+    const {dia, entrada, salida} = req.body;
+    const newHorario = {
+        dia,
+        entrada,
+        salida
+    }
+    await pool.query('INSERT INTO Dia_Horario SET ?', [newHorario]);
 });
 
 
 // Actualizar Dia - Horarios
-router.post('/update',IsLoggedIn,(req, res, next) => 
+router.post('/update',IsLoggedIn,async(req, res, next) => 
 {
-    res.send('Actualizar Dia-Horarios');
+    const {idHorario, dia, entrada, salida} = req.body;
+    const newHorario = {
+        dia,
+        entrada,
+        salida
+    }
+    await pool.query('UPDATE Dia_Horario SET ? WHERE idHorario = ?', [newHorario, idHorario]);
 });
 
 module.exports = router;

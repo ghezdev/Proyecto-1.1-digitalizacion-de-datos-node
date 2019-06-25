@@ -13,20 +13,40 @@ router.get('/',IsLoggedIn,async(req, res, next) =>
     res.status(200).send({materias});
 });
 
+router.get('/:idMateria',IsLoggedIn,async(req, res, next) =>
+{
+    const {idMateria} = req.body;
+    const materiaArray = await pool.query('SELECT * FROM Materia WHERE idMateria = ?', [idMateria]);
+    res.send(materiaArray);
+});
+
 
 // --POST-- //
 
 // Agregar materia
-router.get('/add',IsLoggedIn,(req, res, next) =>
+router.post('/add',IsLoggedIn,async(req, res, next) =>
 {
-    res.send('Agregar materias');
+    const {titulo, descripcion, cantHoras} = req.body;
+    const newMateria = {
+        titulo,
+        descripcion,
+        cantHoras
+    }
+    await pool.query('INSERT INTO Materia SET ?',[newActaCursada]);
 });
 
 
 // Actualizar materia
-router.get('/update',IsLoggedIn,(req, res, next) =>
+router.post('/update',IsLoggedIn,async(req, res, next) =>
 {
-    res.send('Actualizar materias');
+    const {idMateria, titulo, descripcion, cantHoras} = req.body;
+    const newMateria = {
+        titulo,
+        descripcion,
+        cantHoras
+    }
+    await pool.query('UPDATE Materia SET ? WHERE idMateria = ?', [newMateria, idMateria]);
 });
+
 
 module.exports = router;

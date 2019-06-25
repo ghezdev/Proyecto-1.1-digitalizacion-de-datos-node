@@ -13,20 +13,43 @@ router.get('/',IsLoggedIn,async(req, res, next) =>
     res.status(200).send({divisiones});
 });
 
+router.get('/:idDivision',IsLoggedIn,async(req, res, next) =>
+{
+    const {idDivision} = req.body;
+    const arrayDivision = await pool.query('SELECT * FROM Division WHERE idDivision = ?', [idDivision]);
+    res.send(arrayDivision);
+});
+
 
 // --POST-- //
 
 // Agregar Division
-router.get('/add',IsLoggedIn,(req, res, next) =>
+router.post('/add',IsLoggedIn,async(req, res, next) =>
 {
-    res.send('Agregar divisiones');
+    const {especialidad, año, turno, numDivision, cicloLectivo} = req.body;
+    const newDivision = {
+        especialidad,
+        año,
+        turno,
+        numDivision,
+        cicloLectivo
+    }
+    await pool.query('INSERT INTO Division SET ?',[newDivision]);
 });
 
 
 // Actualizar Division
-router.get('/update',IsLoggedIn,(req, res, next) =>
+router.post('/update',IsLoggedIn,async(req, res, next) =>
 {
-    res.send('Actualizar divisiones');
+    const {idDivision, especialidad, año, turno, numDivision, cicloLectivo} = req.body;
+    const newDivision = {
+        especialidad,
+        año,
+        turno,
+        numDivision,
+        cicloLectivo
+    }
+    await pool.query('UPDATE Division SET ? WHERE idDivision = ?', [newDivision, idDivision]);
 });
 
 module.exports = router;
