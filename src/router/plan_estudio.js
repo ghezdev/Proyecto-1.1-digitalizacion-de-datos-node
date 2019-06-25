@@ -5,28 +5,58 @@ const {isLoggedIn, NotLoggedIn} = require('../autenticacion');
 
 // --GET-- //
 
-// Leer lista de Plan de estudio
-router.get('/',IsLoggedIn,async(req, res, next) =>
-{
+//enviar planes de estudio
+router.get('/',IsLoggedIn,async(req, res, next) =>{
     const planEstudio = await pool.query('SELECT * FROM Plan_Estudio')
     .catch(err => next(err));
-    res.status(200).send({planEstudio});
 });
 
+//enviar plan estudio con resolucion
+router.get('/:resolucion',IsLoggedIn,async(req, res, next) =>{
+    const {resolucion} = req.params;
+    const planEstudio = await pool.query('SELECT * FROM Plan_Estudio WHERE resolucion = ?',[resolucion])
+    .catch(err => next(err));
+});
 
 // --POST-- //
 
 // Agregar Plan de estudio
-router.post('/add',IsLoggedIn,(req, res, next) =>
-{
-    res.send('Agregar plan de estudio');
+router.post('/add',IsLoggedIn,(req, res, next) =>{
+    const {
+        resolucion,
+        descripcion,
+        vigenciaDesde,
+        vigenciaHasta
+    } = req.body;
+
+    const newPlandeEstudios = {
+        resolucion,
+        descripcion,
+        vigenciaDesde,
+        vigenciaHasta
+    }
+    await pool.query('INSERT INTO Plan_Estudio SET ? ',[newPlandeEstudios])
+    .catch(err=>next(err));
 });
 
 
 // Actualizar Plan de estudio
-router.post('/update',IsLoggedIn,(req, res, next) => 
-{
-    res.send('Actualizar plan de estudio');
+router.post('/update',IsLoggedIn,(req, res, next) => {
+    const {
+        resolucion,
+        descripcion,
+        vigenciaDesde,
+        vigenciaHasta
+    } = req.body;
+
+    const newPlandeEstudios = {
+        resolucion,
+        descripcion,
+        vigenciaDesde,
+        vigenciaHasta
+    }
+    await pool.query('UPDATE Plan_Estudio SET ? ',[newPlandeEstudios])
+    .catch(err=>next(err));
 });
 
 module.exports = router;
