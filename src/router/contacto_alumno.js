@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const pool = require('../database');
-const {isLoggedIn, NotLoggedIn} = require('../autenticacion');
+const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 
 
 // --GET-- //
@@ -20,7 +20,7 @@ router.get('/:idContactoAlumno',IsLoggedIn,async(req, res, next) =>{
 // --POST-- //
 
 // Agregar Contacto de alumno
-router.post('/add',IsLoggedIn,(req, res, next) =>{
+router.post('/add',IsLoggedIn,async(req, res, next) =>{
     const {
         idContacto,
         idAlumno,
@@ -48,7 +48,7 @@ router.post('/add',IsLoggedIn,(req, res, next) =>{
 
 
 // Actualizar Contacto de alumno
-router.post('/update',IsLoggedIn,(req, res, next) => {
+router.post('/update',IsLoggedIn,async (req, res, next) => {
     const {
         idContacto,
         idAlumno,

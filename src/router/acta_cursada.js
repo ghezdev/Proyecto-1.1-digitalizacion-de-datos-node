@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const pool = require('../database');
-const {isLoggedIn, NotLoggedIn} = require('../autenticacion');
+const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 
 
 // --GET-- //
@@ -13,7 +13,7 @@ router.get('/',IsLoggedIn,async(req, res, next) =>
     res.status(200).send({actaCursadas});
 });
 
-router.get('/:idActaCursada',IsLoggedIn,(req, res, next) =>
+router.get('/:idActaCursada',IsLoggedIn,async (req, res, next) =>
 {
     const {idActaCursada} = req.body;
     const arrayActaCursada = await pool.query('SELECT * FROM Acta_Cursada WHERE idActaCursada = ?',[idActaCursada]);
@@ -24,7 +24,7 @@ router.get('/:idActaCursada',IsLoggedIn,(req, res, next) =>
 // --POST-- //
 
 // Agregar Actas Cursadas
-router.post('/add',IsLoggedIn,(req, res, next) =>
+router.post('/add',IsLoggedIn,async (req, res, next) =>
 {
     const {periodo, nota, fechaCierre} = req.body;
     const newActaCursada = {
@@ -38,7 +38,7 @@ router.post('/add',IsLoggedIn,(req, res, next) =>
 
 
 // Actualizar Actas Cursadas
-router.post('/update',IsLoggedIn,(req, res, next) =>
+router.post('/update',IsLoggedIn,async (req, res, next) =>
 {
     const {idActaCursada, periodo, nota, fechaCierre} = req.body;
     const newActaCursada = {

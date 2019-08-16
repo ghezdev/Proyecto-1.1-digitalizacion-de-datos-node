@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const pool = require('../database');
-const {isLoggedIn, NotLoggedIn} = require('../autenticacion');
+const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 
 
 // --GET-- //

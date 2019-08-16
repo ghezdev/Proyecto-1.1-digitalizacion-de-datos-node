@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const pool = require('../database');
-const {isLoggedIn, NotLoggedIn} = require('../autenticacion');
+const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 
 
 // --GET-- //
@@ -13,7 +13,7 @@ router.get('/',IsLoggedIn,async(req, res, next) =>
     res.status(200).send({diaHorarios});
 });
 
-router.get('/:idHorario',IsLoggedIn,(req, res, next) => 
+router.get('/:idHorario',IsLoggedIn,async(req, res, next) => 
 {
     const {idHorario} = req.body;
     const arrayHorario = await pool.query('SELECT * FROM Dia_Horario WHERE idHorario = ?', [idHorario]);

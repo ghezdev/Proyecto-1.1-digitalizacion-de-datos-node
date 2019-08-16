@@ -2,12 +2,12 @@ const router = require('express').Router();
 const passport = require('passport');
 const path = require('path');
 const pool = require('../database');
-const {isLoggedIn, NotLoggedIn} = require('../autenticacion');
+const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 
 //  --GET--  //
 
 //Pagina inicial
-router.get('/',isLoggedIn,(req,res,next)=>{
+router.get('/',IsLoggedIn,(req,res,next)=>{
     res.sendFile(path.join(__dirname,'../public/Privado.html'));
 });
 
@@ -22,7 +22,7 @@ router.get('/signin',NotLoggedIn,(req,res,next)=>{
 });
 
 //cerrar sesion
-router.get('/logout',isLoggedIn,(req,res)=>{
+router.get('/logout',IsLoggedIn,(req,res)=>{
     req.logOut();
     req.redirect('/api/');
 })
