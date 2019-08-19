@@ -3,6 +3,6 @@ module.exports = {
         host: 'localhost',
         user: 'root',
         password: '',
-        database: 'bd_proyecto1_1'
+        database: 'bd_proyecto1_1',
     }
 };

@@ -5,12 +5,12 @@ const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 
 //Enviar tabla autoridades
 router.get('/',async (req,res,next)=>{
-    const autoridades = await pool.query('SELECT * FROM autoridades')
+    const autoridades = await pool.query('SELECT idAutoridad, dni, telefono, direccion, nombre, apellido,fechaIngreso,fechaNacimiento,fichaMedica FROM autoridades')
     .catch(err=> next(err));
     res.json(autoridades);
 });
 
-//enviar autoridad con ID
+//Enviar autoridad con ID
 router.get('/:idAutoridad',IsLoggedIn,async (req,res,next)=>{
     const {idAutoridad} = req.params;
     const autoridad = await pool.query('SELECT * FROM autoridades WHERE idAutoridad = ?',[idAutoridad])
@@ -47,9 +47,8 @@ router.post('/update',IsLoggedIn,async(req,res,next)=>{
 });
 
 //Agregar una nueva autoridad
-router.post('/add',IsLoggedIn,async(req,res,next)=>{
+router.post('/add',async(req,res,next)=>{
     const {
-        idAutoridad,
         dni,
         telefono,
         direccion,
@@ -59,9 +58,8 @@ router.post('/add',IsLoggedIn,async(req,res,next)=>{
         fechaNacimiento,
         FichaMedica
     } = req.body;
-
+    
     const newAutoridad ={
-        idAutoridad,
         dni,
         telefono,
         direccion,
@@ -73,7 +71,7 @@ router.post('/add',IsLoggedIn,async(req,res,next)=>{
     }
 
     await pool.query('INSERT INTO autoridades SET= ?',[newAutoridad])
-    .catch(err=> next(err));
+    .catch(err=> console.log(err));
 })
 
 module.exports = router;
