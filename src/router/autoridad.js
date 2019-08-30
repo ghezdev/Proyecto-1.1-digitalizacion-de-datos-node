@@ -5,7 +5,17 @@ const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 
 //Enviar tabla autoridades
 router.get('/',async (req,res,next)=>{
-    const autoridades = await pool.query('SELECT autoridades.idAutoridad,GROUP_CONCAT(idRol SEPARATOR ",") AS idRol, dni, telefono, direccion, nombre, apellido,fechaIngreso,fechaNacimiento,fichaMedica FROM autoridades JOIN autoridades_roles WHERE autoridades.idAutoridad = autoridades_roles.idAutoridad GROUP BY autoridades.idAutoridad')
+    const autoridades = await pool.query
+    (`SELECT autoridadesActivos.idAutoridad, GROUP_CONCAT(autoridadesRoles.idRol SEPARATOR ",") AS idRol, dni, telefono, direccion, nombre, apellido, fechaIngreso, fechaNacimiento, fichaMedica
+    FROM (
+    SELECT *
+    FROM autoridades
+    WHERE activo = true) AS autoridadesActivos 
+    INNER JOIN (
+    SELECT *
+    FROM autoridades_roles) AS autoridadesRoles
+    WHERE autoridadesActivos.idAutoridad = autoridadesRoles.idAutoridad 
+    GROUP BY 1`)
     .catch(err=> next(err));
     res.json(autoridades);
 });
