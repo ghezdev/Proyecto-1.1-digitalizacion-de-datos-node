@@ -5,7 +5,7 @@ const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 
 //Enviar tabla autoridades
 router.get('/',async (req,res,next)=>{
-    const autoridades = await pool.query('SELECT idAutoridad, dni, telefono, direccion, nombre, apellido,fechaIngreso,fechaNacimiento,fichaMedica FROM autoridades')
+    const autoridades = await pool.query('SELECT autoridades.idAutoridad,GROUP_CONCAT(idRol SEPARATOR ",") AS idRol, dni, telefono, direccion, nombre, apellido,fechaIngreso,fechaNacimiento,fichaMedica FROM autoridades JOIN autoridades_roles WHERE autoridades.idAutoridad = autoridades_roles.idAutoridad GROUP BY autoridades.idAutoridad')
     .catch(err=> next(err));
     res.json(autoridades);
 });
@@ -70,7 +70,7 @@ router.post('/add',async(req,res,next)=>{
         FichaMedica
     }
 
-    await pool.query('INSERT INTO autoridades SET= ?',[newAutoridad])
+    await pool.query('INSERT INTO autoridades SET ?',[newAutoridad])
     .catch(err=> console.log(err));
 })
 
