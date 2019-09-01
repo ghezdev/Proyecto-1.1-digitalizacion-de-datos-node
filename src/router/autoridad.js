@@ -20,13 +20,6 @@ router.get('/',async (req,res,next)=>{
     res.json(autoridades);
 });
 
-//Enviar autoridad con ID
-router.get('/:idAutoridad',IsLoggedIn,async (req,res,next)=>{
-    const {idAutoridad} = req.params;
-    const autoridad = await pool.query('SELECT * FROM autoridades WHERE idAutoridad = ?',[idAutoridad])
-    .catch(err=> next(err));
-});
-
 //Recibir actualizacion de autoridad con ID
 router.post('/update',IsLoggedIn,async(req,res,next)=>{
     const {
@@ -53,7 +46,7 @@ router.post('/update',IsLoggedIn,async(req,res,next)=>{
         FichaMedica
     }
     await pool.query('UPDATE autoridades SET ?',[newAutoridad])
-    .catch(err=> next(err));
+    .catch(err=> next(err))
 });
 
 //Agregar una nueva autoridad
@@ -66,7 +59,8 @@ router.post('/add',async(req,res,next)=>{
         apellido,
         fechaIngreso,
         fechaNacimiento,
-        FichaMedica
+        FichaMedica,
+        cargos
     } = req.body;
     
     const newAutoridad ={
@@ -81,7 +75,36 @@ router.post('/add',async(req,res,next)=>{
     }
 
     await pool.query('INSERT INTO autoridades SET ?',[newAutoridad])
-    .catch(err=> console.log(err));
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    })
+
+    const idAutoridadNueva = await pool.query('SELECT idAutoridad FROM autoridades WHERE dni = ?',[dni]);
+
+    cargos.forEach((cargo) =>{
+         pool.query('INSERT INTO `autoridades_roles`(`idAutoridad`, `idRol`) VALUES ((SELECT idAutoridad FROM autoridades WHERE idAutoridad = ?),(SELECT idRol FROM roles WHERE idRol = ?))',[idAutoridadNueva[0].idAutoridad,cargo.idRol])
+         .catch(err=>{return new Promise(()=>{
+            next(err)
+            })
+        })
+    });
+
+    res.status(200).send();
+})
+
+router.post('/delete',async(req,res,next)=>{
+    const {
+        idAutoridad
+    } = req.body;
+
+    await pool.query('UPDATE autoridades SET activo = "0" WHERE idAutoridad = ?',[idAutoridad])
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    })
+
+    res.status(200).send();
 })
 
 module.exports = router;
