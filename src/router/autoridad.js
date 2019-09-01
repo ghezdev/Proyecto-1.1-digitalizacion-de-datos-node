@@ -6,37 +6,53 @@ const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 //Enviar tabla autoridades
 router.get('/',async (req,res,next)=>{
     const autoridades = await pool.query
-    (`SELECT autoridadesActivos.idAutoridad, GROUP_CONCAT(autoridadesRoles.idRol SEPARATOR ",") AS idRol, dni, telefono, direccion, nombre, apellido, fechaIngreso, fechaNacimiento, fichaMedica
+    (`SELECT autoridadesActivos.dniAutoridad, GROUP_CONCAT(autoridadesRoles.idRol SEPARATOR ",") AS idRol, telefono, direccion, nombre, apellido, fechaIngreso, fechaNacimiento, fichaMedica
     FROM (
     SELECT *
     FROM autoridades
-    WHERE activo = true) AS autoridadesActivos 
+    WHERE activo = 1) AS autoridadesActivos 
     INNER JOIN (
     SELECT *
     FROM autoridades_roles) AS autoridadesRoles
-    WHERE autoridadesActivos.idAutoridad = autoridadesRoles.idAutoridad 
+    WHERE autoridadesActivos.dniAutoridad = autoridadesRoles.dniAutoridad 
     GROUP BY 1`)
-    .catch(err=> next(err));
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
     res.json(autoridades);
 });
 
-//Recibir actualizacion de autoridad con ID
-router.post('/update',IsLoggedIn,async(req,res,next)=>{
+router.get('/roles/:dniAutoridad',async (req,res,next)=>{
     const {
-        idAutoridad,
-        dni,
+        dniAutoridad
+    } = req.params;
+
+    const autoridadesRoles = await pool.query('SELECT roles.idRol, rol FROM autoridades_roles INNER JOIN roles ON roles.idRol = autoridades_roles.idRol WHERE dniAutoridad = ?',[dniAutoridad])
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+
+    res.json(autoridadesRoles);
+})
+
+//Recibir actualizacion de autoridad con ID
+router.post('/update',async(req,res,next)=>{
+    const {
+        dniAutoridad,
         telefono,
         direccion,
         nombre,
         apellido,
         fechaIngreso,
         fechaNacimiento,
-        FichaMedica
+        FichaMedica,
+        cargos
     } = req.body;
 
     const newAutoridad ={
-        idAutoridad,
-        dni,
+        dniAutoridad,
         telefono,
         direccion,
         nombre,
@@ -45,14 +61,29 @@ router.post('/update',IsLoggedIn,async(req,res,next)=>{
         fechaNacimiento,
         FichaMedica
     }
-    await pool.query('UPDATE autoridades SET ?',[newAutoridad])
-    .catch(err=> next(err))
+    await pool.query('UPDATE autoridades SET ? WHERE dniAutoridad = ?',[newAutoridad,dniAutoridad])
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    })
+
+    await pool.query('DELETE FROM autoridades_roles WHERE dniAutoridad = ?',dniAutoridad)
+
+    cargos.forEach((cargo) =>{
+        pool.query('INSERT INTO autoridades_roles(dniAutoridad, idRol) VALUES ((SELECT dniAutoridad FROM autoridades WHERE dniAutoridad = ?),(SELECT idRol FROM roles WHERE idRol = ?))',[dniAutoridad,cargo.idRol])
+        .catch(err=>{return new Promise(()=>{
+           next(err)
+           })
+       })
+   });
+   
+   res.status(200).send();
 });
 
 //Agregar una nueva autoridad
 router.post('/add',async(req,res,next)=>{
     const {
-        dni,
+        dniAutoridad,
         telefono,
         direccion,
         nombre,
@@ -64,7 +95,7 @@ router.post('/add',async(req,res,next)=>{
     } = req.body;
     
     const newAutoridad ={
-        dni,
+        dniAutoridad,
         telefono,
         direccion,
         nombre,
@@ -80,10 +111,8 @@ router.post('/add',async(req,res,next)=>{
         })
     })
 
-    const idAutoridadNueva = await pool.query('SELECT idAutoridad FROM autoridades WHERE dni = ?',[dni]);
-
     cargos.forEach((cargo) =>{
-         pool.query('INSERT INTO `autoridades_roles`(`idAutoridad`, `idRol`) VALUES ((SELECT idAutoridad FROM autoridades WHERE idAutoridad = ?),(SELECT idRol FROM roles WHERE idRol = ?))',[idAutoridadNueva[0].idAutoridad,cargo.idRol])
+         pool.query('INSERT INTO autoridades_roles(dniAutoridad, idRol) VALUES ((SELECT dniAutoridad FROM autoridades WHERE dniAutoridad = ?),(SELECT idRol FROM roles WHERE idRol = ?))',[dniAutoridad,cargo.idRol])
          .catch(err=>{return new Promise(()=>{
             next(err)
             })
@@ -95,10 +124,10 @@ router.post('/add',async(req,res,next)=>{
 
 router.post('/delete',async(req,res,next)=>{
     const {
-        idAutoridad
+        dniAutoridad
     } = req.body;
 
-    await pool.query('UPDATE autoridades SET activo = "0" WHERE idAutoridad = ?',[idAutoridad])
+    await pool.query('UPDATE autoridades SET activo = "0" WHERE dniAutoridad = ?',[dniAutoridad])
     .catch(err=>{return new Promise(()=>{
         next(err)
         })
