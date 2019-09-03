@@ -6,15 +6,12 @@ const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 
 //enviar tabla Alumno
 router.get('/',async(req,res,next)=>{
-    const alumnos = await pool.query('SELECT * FROM alumno')
-    .catch(err=> next(err));
-});
-
-//enviar alumno con ID
-router.get('/:idAlumno',async(req,res,next)=>{
-    const {idAlumno} = req.params;
-    const alumno = await pool.query('SELECT * FROM alumno WHERE idAlumno = ?',[idAlumno])
-    .catch(err=> next(err));
+    const alumnos = await pool.query(`SELECT * FROM alumno WHERE activo = 1`)
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+    res.json(alumnos);
 });
 
 //  --POST--  //
@@ -22,8 +19,7 @@ router.get('/:idAlumno',async(req,res,next)=>{
 //Agregar Alumno
 router.post('/add',async (req,res,next)=>{
     const {
-        idAlumno,
-        dni,
+        dniAlumno,
         telefono,
         direccion,
         nombre,
@@ -34,8 +30,7 @@ router.post('/add',async (req,res,next)=>{
     } = req.body;
 
     const newAlumno={
-        idAlumno,
-        dni,
+        dniAlumno,
         telefono,
         direccion,
         nombre,
@@ -44,15 +39,18 @@ router.post('/add',async (req,res,next)=>{
         fechaNacimiento,
         fechaIngreso
     }
-    await pool.query('INSERT INTO alumno SET= ?',[newAlumno])
-    .catch(err=> next(err));
+    await pool.query('INSERT INTO alumno SET ?',[newAlumno])
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+    res.status(200).send();
 });
 
 //Actualizar Alumno
 router.post('/update',async(req,res,next)=>{
     const {
-        idAlumno,
-        dni,
+        dniAlumno,
         telefono,
         direccion,
         nombre,
@@ -63,8 +61,7 @@ router.post('/update',async(req,res,next)=>{
     } = req.body;
 
     const newAlumno={
-        idAlumno,
-        dni,
+        dniAlumno,
         telefono,
         direccion,
         nombre,
@@ -75,7 +72,25 @@ router.post('/update',async(req,res,next)=>{
     }
 
     await pool.query('UPDATE alumno SET ?',[newAlumno])
-    .catch(err=>next(err));
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+    res.status(200).send();
 });
+
+router.post('/delete',async(req,res,next)=>{
+    const {
+        dniAlumno
+    } = req.body;
+
+    await pool.query('UPDATE alumno SET activo = "0" WHERE dniAlumno = ?',[dniAlumno])
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    })
+
+    res.status(200).send();
+})
 
 module.exports = router;
