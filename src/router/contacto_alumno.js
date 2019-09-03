@@ -5,16 +5,15 @@ const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 
 // --GET-- //
 
-//enviar contactos de alumnos
-router.get('/',IsLoggedIn,async(req, res, next) =>{
-    const contactoAlumnos = await pool.query('SELECT * FROM Contacto_Alumno')
-    .catch(err => next(err));
-});
-
-router.get('/:idContactoAlumno',IsLoggedIn,async(req, res, next) =>{
-    const {idContactoAlumno} = req.params;
-    const contactoAlumnos = await pool.query('SELECT * FROM Contacto_Alumno WHERE idContacto = ?',[idContactoAlumno])
-    .catch(err => next(err));
+router.get('/',async(req, res, next) =>{
+    const {dniAlumno} = req.body;
+    const contactoAlumnos = await pool.query('SELECT * FROM contacto_alumno WHERE dniAlumno = ?',[dniAlumno])
+    .catch(err=>{return new Promise(()=>{
+            next(err)
+        })
+    })
+    
+    res.json(contactoAlumnos)
 });
 
 // --POST-- //
