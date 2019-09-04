@@ -5,8 +5,8 @@ const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 
 // --GET-- //
 
-router.get('/',async(req, res, next) =>{
-    const {dniAlumno} = req.body;
+router.get('/:dniAlumno',async(req, res, next) =>{
+    const {dniAlumno} = req.params;
     const contactoAlumnos = await pool.query('SELECT * FROM contacto_alumno WHERE dniAlumno = ?',[dniAlumno])
     .catch(err=>{return new Promise(()=>{
             next(err)
@@ -19,30 +19,33 @@ router.get('/',async(req, res, next) =>{
 // --POST-- //
 
 // Agregar Contacto de alumno
-router.post('/add',IsLoggedIn,async(req, res, next) =>{
+router.post('/add',async(req, res, next) =>{
     const {
-        idContacto,
-        idAlumno,
+        dniAlumno,
         nombre,
         apellido,
         relacion,
         celular,
         mail,
-        dni
+        dniContacto
     } = req.body;
 
     const newContactoAlumno ={
-        idContacto,
-        idAlumno,
+        dniAlumno,
         nombre,
         apellido,
         relacion,
         celular,
         mail,
-        dni
+        dniContacto
     }
     await pool.query('INSERT INTO Contacto_Alumno SET ?',[newContactoAlumno])
-    .catch(err=>next(err));
+    .catch(err=>{return new Promise(()=>{
+            next(err)
+        })
+    })
+
+    res.status(200).send();
 });
 
 

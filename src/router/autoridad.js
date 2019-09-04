@@ -23,6 +23,30 @@ router.get('/',async (req,res,next)=>{
     res.json(autoridades);
 });
 
+router.get('/:dniAutoridad',async(req,res,next)=>{
+    const {
+        dniAutoridad
+    } = req.params;
+
+    const autoridad = await pool.query(`SELECT *
+    FROM (SELECT autoridadesActivos.dniAutoridad, GROUP_CONCAT(autoridadesRoles.idRol SEPARATOR ",") AS idRol, telefono, direccion, nombre, apellido, fechaIngreso, fechaNacimiento, fichaMedica
+          FROM (
+              SELECT * 
+              FROM autoridades) AS autoridadesActivos
+          INNER JOIN (
+              SELECT * 
+              FROM autoridades_roles) AS autoridadesRoles
+          WHERE autoridadesActivos.dniAutoridad = autoridadesRoles.dniAutoridad
+          GROUP BY 1) AS A
+    WHERE A.dniAutoridad = ?`,[dniAutoridad])
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+
+    res.json(autoridad);
+})
+
 router.get('/roles/:dniAutoridad',async (req,res,next)=>{
     const {
         dniAutoridad
