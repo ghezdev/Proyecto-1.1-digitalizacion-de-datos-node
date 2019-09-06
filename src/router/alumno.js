@@ -14,6 +14,18 @@ router.get('/',async(req,res,next)=>{
     res.json(alumnos);
 });
 
+router.get('/:dniAlumno',async(req,res,next)=>{
+    const {
+        dniAlumno 
+    }= req.params;
+    const alumno = await pool.query(`SELECT * FROM alumno WHERE dniAlumno = ?`,[dniAlumno])
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+    res.json(alumno);
+});
+
 //  --POST--  //
 
 //Agregar Alumno
@@ -70,7 +82,6 @@ router.post('/update',async(req,res,next)=>{
         fechaNacimiento,
         fechaIngreso
     }
-
     await pool.query('UPDATE alumno SET ?',[newAlumno])
     .catch(err=>{return new Promise(()=>{
         next(err)

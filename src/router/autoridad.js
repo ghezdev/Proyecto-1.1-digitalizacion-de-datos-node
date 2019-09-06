@@ -128,7 +128,6 @@ router.post('/add',async(req,res,next)=>{
         fechaNacimiento,
         fichaMedica
     }
-    console.log(newAutoridad)
 
     await pool.query('INSERT INTO autoridades SET ?',[newAutoridad])
     .catch(err=>{return new Promise(()=>{
