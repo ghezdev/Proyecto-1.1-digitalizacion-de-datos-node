@@ -6,11 +6,15 @@ const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 // --GET-- //
 
 // Leer lista de divisiones
-router.get('/',IsLoggedIn,async(req, res, next) =>
+router.get('/',async(req, res, next) =>
 {
-    const divisiones = await pool.query('SELECT * FROM Divisiones')
-    .catch(err => next(err));
-    res.status(200).send({divisiones});
+    const divisiones = await pool.query('SELECT * FROM Division')
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+
+    res.json(divisiones);
 });
 
 router.get('/:idDivision',IsLoggedIn,async(req, res, next) =>
@@ -24,17 +28,22 @@ router.get('/:idDivision',IsLoggedIn,async(req, res, next) =>
 // --POST-- //
 
 // Agregar Division
-router.post('/add',IsLoggedIn,async(req, res, next) =>
-{
-    const {especialidad, año, turno, numDivision, cicloLectivo} = req.body;
-    const newDivision = {
+router.post('/add',async(req, res, next) =>{
+    const {
+        dniPreceptor,
         especialidad,
         año,
         turno,
         numDivision,
         cicloLectivo
-    }
-    await pool.query('INSERT INTO Division SET ?',[newDivision]);
+    } = req.body;
+
+    await pool.query('INSERT INTO Division(dniPreceptor, especialidad, año, turno, numDivision, cicloLectivo) VALUES ((SELECT dniAutoridad FROM autoridades WHERE dniAutoridad = ?),?,?,?,?,?)',[dniPreceptor,especialidad,año,turno,numDivision,cicloLectivo])
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+      })
+    });
+    res.status(200).send();
 });
 
 
