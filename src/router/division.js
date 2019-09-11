@@ -17,11 +17,15 @@ router.get('/',async(req, res, next) =>
     res.json(divisiones);
 });
 
-router.get('/:idDivision',IsLoggedIn,async(req, res, next) =>
+router.get('/:idDivision',async(req, res, next) =>
 {
-    const {idDivision} = req.body;
-    const arrayDivision = await pool.query('SELECT * FROM Division WHERE idDivision = ?', [idDivision]);
-    res.send(arrayDivision);
+    const {idDivision} = req.params;
+    const Division = await pool.query('SELECT * FROM Division WHERE idDivision = ?', [idDivision])
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+    res.json(Division);
 });
 
 
@@ -38,27 +42,62 @@ router.post('/add',async(req, res, next) =>{
         cicloLectivo
     } = req.body;
 
-    await pool.query('INSERT INTO Division(dniPreceptor, especialidad, año, turno, numDivision, cicloLectivo) VALUES ((SELECT dniAutoridad FROM autoridades WHERE dniAutoridad = ?),?,?,?,?,?)',[dniPreceptor,especialidad,año,turno,numDivision,cicloLectivo])
-    .catch(err=>{return new Promise(()=>{
-        next(err)
-      })
-    });
+    if(dniPreceptor){
+        await pool.query('INSERT INTO Division(dniPreceptor, especialidad, año, turno, numDivision, cicloLectivo) VALUES ((SELECT dniAutoridad FROM autoridades WHERE dniAutoridad = ?),?,?,?,?,?)',[dniPreceptor,especialidad,año,turno,numDivision,cicloLectivo])
+        .catch(err=>{return new Promise(()=>{
+            console.log(err)
+            next(err)
+        })
+        });
+    }else{
+        await pool.query('INSERT INTO Division(especialidad, año, turno, numDivision, cicloLectivo) VALUES (?,?,?,?,?)',[especialidad,año,turno,numDivision,cicloLectivo])
+        .catch(err=>{return new Promise(()=>{
+            console.log(err)
+            next(err)
+        })
+        });
+    }
+    
     res.status(200).send();
 });
 
 
 // Actualizar Division
-router.post('/update',IsLoggedIn,async(req, res, next) =>
+router.post('/update',async(req, res, next) =>
 {
-    const {idDivision, especialidad, año, turno, numDivision, cicloLectivo} = req.body;
+    const {idDivision, especialidad, año, turno, numDivision, cicloLectivo,dniPreceptor} = req.body;
+    const newDivisionPreceptor = {
+        especialidad,
+        año,
+        turno,
+        numDivision,
+        cicloLectivo,
+        dniPreceptor
+    }
     const newDivision = {
         especialidad,
         año,
         turno,
         numDivision,
-        cicloLectivo
+        cicloLectivo,
     }
-    await pool.query('UPDATE Division SET ? WHERE idDivision = ?', [newDivision, idDivision]);
+
+    if(dniPreceptor){
+        await pool.query('UPDATE division SET ? WHERE idDivision = ?', [newDivisionPreceptor, idDivision])
+        .catch(err=>{return new Promise(()=>{
+            next(err)
+            })
+        });
+    }else{
+        await pool.query('UPDATE division SET ? WHERE idDivision = ?', [newDivision, idDivision])
+        .catch(err=>{return new Promise(()=>{
+            next(err)
+            })
+        });
+    }
+
+    
+  res.status(200).send();
 });
 
 module.exports = router;
