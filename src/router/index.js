@@ -8,7 +8,7 @@ const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 
 //Pagina inicial
 router.get('/',IsLoggedIn,(req,res,next)=>{
-    res.sendFile(path.join(__dirname,'../public/Privado.html'));
+    res.status(200).send('HOLA');
 });
 
 //Registrarse

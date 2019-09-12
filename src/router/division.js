@@ -45,14 +45,12 @@ router.post('/add',async(req, res, next) =>{
     if(dniPreceptor){
         await pool.query('INSERT INTO Division(dniPreceptor, especialidad, año, turno, numDivision, cicloLectivo) VALUES ((SELECT dniAutoridad FROM autoridades WHERE dniAutoridad = ?),?,?,?,?,?)',[dniPreceptor,especialidad,año,turno,numDivision,cicloLectivo])
         .catch(err=>{return new Promise(()=>{
-            console.log(err)
             next(err)
         })
         });
     }else{
         await pool.query('INSERT INTO Division(especialidad, año, turno, numDivision, cicloLectivo) VALUES (?,?,?,?,?)',[especialidad,año,turno,numDivision,cicloLectivo])
         .catch(err=>{return new Promise(()=>{
-            console.log(err)
             next(err)
         })
         });
