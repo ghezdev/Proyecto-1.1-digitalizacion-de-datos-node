@@ -19,7 +19,7 @@ router.get('/',async(req, res, next) =>
 
 // --POST-- //
 
-// Agregar rol
+//Agregar rol
 router.post('/add',async(req, res, next) =>{
     const {
         rol

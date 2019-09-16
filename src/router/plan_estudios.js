@@ -6,22 +6,32 @@ const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 // --GET-- //
 
 //enviar planes de estudio
-router.get('/',IsLoggedIn,async(req, res, next) =>{
+router.get('/',async(req, res, next) =>{
     const planEstudio = await pool.query('SELECT * FROM Plan_Estudio')
-    .catch(err => next(err));
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+
+    res.json(planEstudio);
 });
 
 //enviar plan estudio con resolucion
-router.get('/:resolucion',IsLoggedIn,async(req, res, next) =>{
+router.get('/:resolucion',async(req, res, next) =>{
     const {resolucion} = req.params;
     const planEstudio = await pool.query('SELECT * FROM Plan_Estudio WHERE resolucion = ?',[resolucion])
-    .catch(err => next(err));
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+
+    res.json(planEstudio);
 });
 
 // --POST-- //
 
 // Agregar Plan de estudio
-router.post('/add',IsLoggedIn,async(req, res, next) =>{
+router.post('/add',async(req, res, next) =>{
     const {
         resolucion,
         descripcion,
@@ -36,12 +46,16 @@ router.post('/add',IsLoggedIn,async(req, res, next) =>{
         vigenciaHasta
     }
     await pool.query('INSERT INTO Plan_Estudio SET ? ',[newPlandeEstudios])
-    .catch(err=>next(err));
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+    res.sendStatus(200);
 });
 
 
 // Actualizar Plan de estudio
-router.post('/update',IsLoggedIn,async(req, res, next) => {
+router.post('/update',async(req, res, next) => {
     const {
         resolucion,
         descripcion,
@@ -56,7 +70,11 @@ router.post('/update',IsLoggedIn,async(req, res, next) => {
         vigenciaHasta
     }
     await pool.query('UPDATE Plan_Estudio SET ? ',[newPlandeEstudios])
-    .catch(err=>next(err));
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+    res.sendStatus(200);
 });
 
 module.exports = router;
