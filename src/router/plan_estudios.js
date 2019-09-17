@@ -16,6 +16,16 @@ router.get('/',async(req, res, next) =>{
     res.json(planEstudio);
 });
 
+router.get('/resoluciones',async(req, res, next) =>{
+    const resoluciones = await pool.query('SELECT resolucion FROM Plan_Estudio')
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+
+    res.json(resoluciones);
+});
+
 //enviar plan estudio con resolucion
 router.get('/:resolucion',async(req, res, next) =>{
     const {resolucion} = req.params;

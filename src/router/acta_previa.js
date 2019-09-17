@@ -6,14 +6,18 @@ const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 // --GET-- //
 
 // Leer lista de materia
-router.get('/',IsLoggedIn,async(req, res, next) =>
+router.get('/',async(req, res, next) =>
 {
-    const actaPrevias = await pool.query('SELECT * FROM Acta_Previa')
-    .catch(err => next(err));
-    res.status(200).send({actaPrevias});
+    const actaPrevias = await pool.query('SELECT * FROM acta_previa')
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+
+    res.json(actaPrevias);
 });
 
-router.get('/:idActaPrevia',IsLoggedIn,async(req, res, next) =>
+router.get('/:idActaPrevia',async(req, res, next) =>
 {
     const {idActaPrevia} = req.body;
     const arrayActaPrevia = await pool.query('SELECT * FROM Acta_Previa WHERE idActaPrevia = ?',[idActaPrevia]);
@@ -24,7 +28,7 @@ router.get('/:idActaPrevia',IsLoggedIn,async(req, res, next) =>
 // --POST-- //
 
 // Agregar Acta previa
-router.post('/add',IsLoggedIn,async(req, res, next) =>
+router.post('/add',async(req, res, next) =>
 {
     const {tipo, fechaCierre} = req.body;
     const newActaPrevia = {
@@ -36,7 +40,7 @@ router.post('/add',IsLoggedIn,async(req, res, next) =>
 
 
 // Actualizar Acta previa
-router.post('/update',IsLoggedIn,async(req, res, next) =>
+router.post('/update',async(req, res, next) =>
 {
     const {idActaPrevia, tipo, fechaCierre} = req.body;
     const newActaPrevia = {
