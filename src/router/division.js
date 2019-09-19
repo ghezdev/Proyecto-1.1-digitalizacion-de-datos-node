@@ -59,6 +59,11 @@ router.post('/add',async(req, res, next) =>{
     res.status(200).send();
 });
 
+router.post('/delete',async(req,res,next) =>{
+    const {
+        idDivision
+    } = req.body;
+});
 
 // Actualizar Division
 router.post('/update',async(req, res, next) =>

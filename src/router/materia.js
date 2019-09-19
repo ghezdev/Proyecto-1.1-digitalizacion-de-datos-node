@@ -16,6 +16,16 @@ router.get('/',async(req, res, next) =>
     res.json(materias);
 });
 
+router.get('/PlanMateria',async(req, res, next) =>
+{
+    const materias = await pool.query('SELECT materia.idMateria,titulo,descripcion,cantHoras,resolucion FROM Materia INNER JOIN plan_materia WHERE Materia.idMateria = plan_materia.idMateria')
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+    res.json(materias);
+});
+
 router.get('/:idMateria',async(req, res, next) =>
 {
     const {
@@ -29,18 +39,18 @@ router.get('/:idMateria',async(req, res, next) =>
     res.json(materia);
 });
 
-router.get('/plan_Materia/:resolucion',async(req, res, next) =>
-{
-    const {
-        resolucion
-    } = req.params;
-    const ResolucionMateria = await pool.query('SELECT * FROM plan_materia WHERE resolucion = ?',[resolucion])
-    .catch(err=>{return new Promise(()=>{
-        next(err)
-        })
-    });
-    res.json(ResolucionMateria);
-});
+// router.get('/plan_Materia/:resolucion',async(req, res, next) =>
+// {
+//     const {
+//         resolucion
+//     } = req.params;
+//     const ResolucionMateria = await pool.query('SELECT * FROM plan_materia WHERE resolucion = ?',[resolucion])
+//     .catch(err=>{return new Promise(()=>{
+//         next(err)
+//         })
+//     });
+//     res.json(ResolucionMateria);
+// });
 
 router.get('/plan_Materia/Resolucion/:idMateria',async(req, res, next) =>
 {
