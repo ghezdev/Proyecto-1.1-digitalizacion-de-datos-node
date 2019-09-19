@@ -11,3 +11,5 @@ router.get('/',async(req, res, next) =>
     });
     res.json(actaCursadas);
 });
+
+module.exports = router;
