@@ -9,8 +9,11 @@ const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 router.get('/',IsLoggedIn,async(req, res, next) =>
 {
     const actaCursadas = await pool.query('SELECT * FROM Acta_Cursada')
-    .catch(err => next(err));
-    res.status(200).send({actaCursadas});
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+    res.json(actaCursadas);
 });
 
 router.get('/:idActaCursada',IsLoggedIn,async (req, res, next) =>

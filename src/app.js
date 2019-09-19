@@ -42,6 +42,7 @@ app.use('/api/division/',require('./router/division'));
 app.use('/api/materia/',require('./router/materia'));
 app.use('/api/plan_estudios/',require('./router/plan_estudios'));
 app.use('/api/rol/',require('./router/rol'));
+app.use('/api/cursada/',require('./router/cursada'));
 
 
 //Archivos estaticos
