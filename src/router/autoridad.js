@@ -48,6 +48,28 @@ router.get('/preceptores',async (req,res,next)=>{
     res.json(autoridad);
 });
 
+router.get('/profesores',async (req,res,next)=>{
+    const autoridad = await pool.query
+    (`SELECT autoridadesActivosRoles.dniAutoridad, GROUP_CONCAT(DISTINCT autoridadesActivosRoles.idRol SEPARATOR ",") AS idRol, telefono, direccion, nombre, apellido, MAX(fechaAlta)fechaAlta, fechaNacimiento, fichaMedica
+    FROM (SELECT autoridadesActivos.dniAutoridad, autoridadesRoles.idRol, telefono, direccion, nombre, apellido, fechaNacimiento, fichaMedica
+          FROM(
+        SELECT * 
+        FROM autoridades) AS autoridadesActivos
+    INNER JOIN (
+        SELECT * 
+        FROM autoridades_roles WHERE idRol = 2) AS autoridadesRoles
+    WHERE autoridadesActivos.dniAutoridad = autoridadesRoles.dniAutoridad) AS autoridadesActivosRoles
+    INNER JOIN (
+      SELECT * FROM fechas_activo_autoridad) AS autoridadesFechas 
+      WHERE autoridadesActivosRoles.dniAutoridad = autoridadesFechas.dniAutoridad
+    GROUP BY dniAutoridad`)
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+    res.json(autoridad);
+});
+
 router.get('/:dniAutoridad',async(req,res,next)=>{
     const {
         dniAutoridad

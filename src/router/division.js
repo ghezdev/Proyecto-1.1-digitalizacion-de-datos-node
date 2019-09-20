@@ -28,7 +28,6 @@ router.get('/:idDivision',async(req, res, next) =>
     res.json(Division);
 });
 
-
 // --POST-- //
 
 // Agregar Division
