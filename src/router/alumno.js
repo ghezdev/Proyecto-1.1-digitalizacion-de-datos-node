@@ -26,6 +26,18 @@ router.get('/:dniAlumno',async(req,res,next)=>{
     res.json(alumno);
 });
 
+router.get('/HistorialDivision/:idDivision',async(req,res,next)=>{
+    const{
+        idDivision
+    }= req.params;
+    const alumnos = await pool.query(`SELECT * FROM(SELECT idDivision,alumno.dniAlumno,nombre,apellido,telefono FROM historial_alumno INNER JOIN alumno WHERE historial_alumno.dniAlumno = alumno.dniAlumno) AS A WHERE A.idDivision = ?`,[idDivision])
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+    res.json(alumnos);
+});
+
 router.get('/historial/:dniAlumno',async(req,res,next)=>{
     const {
         dniAlumno 
