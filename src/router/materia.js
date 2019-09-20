@@ -18,7 +18,7 @@ router.get('/',async(req, res, next) =>
 
 router.get('/PlanMateria',async(req, res, next) =>
 {
-    const materias = await pool.query('SELECT materia.idMateria,titulo,descripcion,cantHoras,resolucion FROM Materia INNER JOIN plan_materia WHERE Materia.idMateria = plan_materia.idMateria')
+    const materias = await pool.query('SELECT materia.idMateria,titulo,descripcion,cantHoras,resolucion FROM Materia INNER JOIN plan_materia WHERE Materia.idMateria = plan_materia.idMateria AND Materia.activo = 1')
     .catch(err=>{return new Promise(()=>{
         next(err)
         })
@@ -136,5 +136,19 @@ router.post('/update',async(req, res, next) =>
     res.sendStatus(200);
 });
 
+router.post('/delete',async(req, res, next) =>
+{
+    const {idMateria} = req.body;
+
+    let fechaActual = new Date().toISOString();
+
+    await pool.query('UPDATE Materia SET fechaBaja = ?, activo = "0" WHERE idMateria = ?', [fechaActual, idMateria])
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+    
+    res.status(200).send();
+});
 
 module.exports = router;

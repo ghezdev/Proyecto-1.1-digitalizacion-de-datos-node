@@ -45,15 +45,13 @@ router.post('/add',async(req, res, next) =>{
     const {
         resolucion,
         descripcion,
-        vigenciaDesde,
-        vigenciaHasta
+        vigenciaDesde
     } = req.body;
 
     const newPlandeEstudios = {
         resolucion,
         descripcion,
-        vigenciaDesde,
-        vigenciaHasta
+        vigenciaDesde
     }
     await pool.query('INSERT INTO Plan_Estudio SET ? ',[newPlandeEstudios])
     .catch(err=>{return new Promise(()=>{
@@ -69,21 +67,35 @@ router.post('/update',async(req, res, next) => {
     const {
         resolucion,
         descripcion,
-        vigenciaDesde,
-        vigenciaHasta
+        vigenciaDesde
     } = req.body;
 
+    console.log(resolucion);
     const newPlandeEstudios = {
         resolucion,
         descripcion,
-        vigenciaDesde,
-        vigenciaHasta
+        vigenciaDesde
     }
-    await pool.query('UPDATE Plan_Estudio SET ? ',[newPlandeEstudios])
+    await pool.query('UPDATE Plan_Estudio SET ? WHERE resolucion = ?',[newPlandeEstudios, resolucion])
     .catch(err=>{return new Promise(()=>{
         next(err)
         })
     });
+    res.sendStatus(200);
+});
+
+router.post('/down',async(req, res, next) => {
+
+    const {resolucion} = req.body;
+
+    let fechaActual = new Date().toISOString();
+
+    await pool.query('UPDATE Plan_Estudio SET vigenciaHasta = ? WHERE resolucion = ? ', [fechaActual, resolucion])
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+
     res.sendStatus(200);
 });
 
