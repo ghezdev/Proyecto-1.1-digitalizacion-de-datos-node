@@ -8,7 +8,7 @@ const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 // Leer lista de divisiones
 router.get('/',async(req, res, next) =>
 {
-    const divisiones = await pool.query('SELECT * FROM Division')
+    const divisiones = await pool.query('SELECT * FROM Division WHERE activo = 1')
     .catch(err=>{return new Promise(()=>{
         next(err)
         })
@@ -59,12 +59,6 @@ router.post('/add',async(req, res, next) =>{
     res.status(200).send();
 });
 
-router.post('/delete',async(req,res,next) =>{
-    const {
-        idDivision
-    } = req.body;
-});
-
 // Actualizar Division
 router.post('/update',async(req, res, next) =>
 {
@@ -101,6 +95,21 @@ router.post('/update',async(req, res, next) =>
 
     
   res.status(200).send();
+});
+
+router.post('/delete',async(req, res, next) =>
+{
+    const {idDivision} = req.body;
+
+    let fechaActual = new Date().toISOString();
+
+    await pool.query('UPDATE Division SET fechaBaja = ?, activo = "0" WHERE idDivision = ?', [fechaActual, idDivision])
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+    
+    res.status(200).send();
 });
 
 module.exports = router;
