@@ -6,7 +6,7 @@ const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 // --GET-- //
 
 // Leer lista de Dia - Horarios
-router.get('/',IsLoggedIn,async(req, res, next) =>
+router.get('/',async(req, res, next) =>
 {
     const diaHorarios = await pool.query('SELECT * FROM Dia_Horario')
     .catch(err => next(err));
@@ -24,7 +24,7 @@ router.get('/:idHorario',IsLoggedIn,async(req, res, next) =>
 // --POST-- //
 
 // Agregar Dia - Horarios
-router.post('/add',IsLoggedIn,async(req, res, next) =>
+router.post('/add',async(req, res, next) =>
 {
     const {dia, entrada, salida} = req.body;
     const newHorario = {
@@ -37,7 +37,7 @@ router.post('/add',IsLoggedIn,async(req, res, next) =>
 
 
 // Actualizar Dia - Horarios
-router.post('/update',IsLoggedIn,async(req, res, next) => 
+router.post('/update',async(req, res, next) => 
 {
     const {idHorario, dia, entrada, salida} = req.body;
     const newHorario = {
