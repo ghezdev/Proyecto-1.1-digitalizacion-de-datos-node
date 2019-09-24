@@ -91,17 +91,8 @@ router.post('/add',async(req,res,next)=>{
         idDivision,
         idMateria,
         dniProfesor,
-        tomarLista,
-        dia,
-        entrada,
-        salida
+        tomarLista
     } = req.body;
-
-    let entradaIso =new Date(entrada);
-    let salidaIso = new Date(salida);
-
-    let entradaDefinitiva= new Date(entradaIso.getFullYear(), entradaIso.getMonth(), entradaIso.getDate(), entradaIso.getHours() - 3, entradaIso.getMinutes(), 0).toISOString();
-    let salidaDefinitiva= new Date(salidaIso.getFullYear(), salidaIso.getMonth(), salidaIso.getDate(), salidaIso.getHours() - 3, salidaIso.getMinutes(), 0).toISOString();
 
     await pool.query(`INSERT INTO cursada(idDivision, idMateria, dniProfesor, tomarLista) 
     VALUES 

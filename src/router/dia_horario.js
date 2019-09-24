@@ -26,13 +26,33 @@ router.get('/:idHorario',IsLoggedIn,async(req, res, next) =>
 // Agregar Dia - Horarios
 router.post('/add',async(req, res, next) =>
 {
-    const {dia, entrada, salida} = req.body;
-    const newHorario = {
+    const {
+        idCursada,
         dia,
         entrada,
         salida
+    } = req.body;
+
+    let entradaIso =new Date(entrada);
+    let salidaIso = new Date(salida);
+
+    let entradaDefinitiva= new Date(entradaIso.getFullYear(), entradaIso.getMonth(), entradaIso.getDate(), entradaIso.getHours() - 3, entradaIso.getMinutes(), 0).toISOString();
+    let salidaDefinitiva= new Date(salidaIso.getFullYear(), salidaIso.getMonth(), salidaIso.getDate(), salidaIso.getHours() - 3, salidaIso.getMinutes(), 0).toISOString();
+
+    const newHorario = {
+        idCursada,
+        dia,
+        entradaDefinitiva,
+        salidaDefinitiva
     }
-    await pool.query('INSERT INTO Dia_Horario SET ?', [newHorario]);
+
+    await pool.query('INSERT INTO Dia_Horario SET ?', [newHorario])
+    .catch(err=>{return new Promise(()=>{
+                next(err)
+            })
+        });
+
+    res.sendStatus(200);
 });
 
 
