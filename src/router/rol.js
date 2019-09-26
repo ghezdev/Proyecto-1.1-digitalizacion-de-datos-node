@@ -8,6 +8,7 @@ const {IsLoggedIn, NotLoggedIn} = require('../autenticacion');
 // Leer lista de roles
 router.get('/',async(req, res, next) =>
 {
+    console.log('sadsad')
     const roles = await pool.query('SELECT * FROM Roles')
     .catch(err=>{return new Promise(()=>{
         next(err)

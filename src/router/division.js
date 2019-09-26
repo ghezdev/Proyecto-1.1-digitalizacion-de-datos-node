@@ -58,6 +58,21 @@ router.post('/add',async(req, res, next) =>{
     res.status(200).send();
 });
 
+router.post('/alumno/add',async(req, res, next) =>{
+    const {
+        idDivision,
+        dniAlumno
+    } = req.body;
+
+    await pool.query('INSERT INTO historial_alumno(idDivision, dniAlumno) VALUES (?,?)',[idDivision,dniAlumno])
+    .catch(err=>{return new Promise(()=>{
+        next(err)
+        })
+    });
+    
+    res.status(200).send();
+});
+
 // Actualizar Division
 router.post('/update',async(req, res, next) =>
 {

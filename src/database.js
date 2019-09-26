@@ -15,10 +15,10 @@ pool.getConnection((err,connection) =>{
         if(err.code ==='ECONNREFUSED'){
             console.error('LA CONEXION A LA BASE DE DATOS FUE DENEGADA');
         }
-    }
+    }else
+    console.log('DB is Connected');
 
     if(connection) {connection.release();}
-    console.log('DB is Connected');
     return;
 });
 

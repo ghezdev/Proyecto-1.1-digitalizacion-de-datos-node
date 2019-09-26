@@ -33,39 +33,48 @@ router.post('/add',async(req, res, next) =>
         salida
     } = req.body;
 
-    let entradaIso =new Date(entrada);
-    let salidaIso = new Date(salida);
+    let entradaInicio = entrada.slice(0,2);
+    let entradaFin = entrada.slice(3,5);
 
-    let entradaDefinitiva= new Date(entradaIso.getFullYear(), entradaIso.getMonth(), entradaIso.getDate(), entradaIso.getHours() - 3, entradaIso.getMinutes(), 0).toISOString();
-    let salidaDefinitiva= new Date(salidaIso.getFullYear(), salidaIso.getMonth(), salidaIso.getDate(), salidaIso.getHours() - 3, salidaIso.getMinutes(), 0).toISOString();
+    let salidaInicio = salida.slice(0,2);
+    let salidaFin = salida.slice(3,5);
+
+    let entradaDefinitiva =new Date(0,0,0,entradaInicio,entradaFin);
+    let salidaDefinitiva = new Date(0,0,0,salidaInicio,salidaFin);
 
     const newHorario = {
         idCursada,
         dia,
-        entradaDefinitiva,
-        salidaDefinitiva
+        entrada:entradaDefinitiva,
+        salida:salidaDefinitiva
     }
 
     await pool.query('INSERT INTO Dia_Horario SET ?', [newHorario])
     .catch(err=>{return new Promise(()=>{
-                next(err)
-            })
-        });
+        console.log(err)
+        next(err)
+        })
+    });
 
     res.sendStatus(200);
 });
 
 
 // Actualizar Dia - Horarios
-router.post('/update',async(req, res, next) => 
+router.post('/delete',async(req, res, next) => 
 {
-    const {idHorario, dia, entrada, salida} = req.body;
-    const newHorario = {
-        dia,
-        entrada,
-        salida
-    }
-    await pool.query('UPDATE Dia_Horario SET ? WHERE idHorario = ?', [newHorario, idHorario]);
+    const {
+        idHorario
+    } = req.body;
+    
+    await pool.query('DELETE FROM Dia_Horario WHERE idHorario = ?', [idHorario])
+    .catch(err=>{return new Promise(()=>{
+        console.log(err)
+        next(err)
+        })
+    });
+
+    res.sendStatus(200);
 });
 
 module.exports = router;
