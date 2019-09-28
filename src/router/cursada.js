@@ -158,7 +158,6 @@ router.post('/update',async(req,res,next) =>{
 
     await pool.query('UPDATE cursada SET ?',[newCursada])
     .catch(err=>{return new Promise(()=>{
-        console.log(err)
         next(err)
     })
 });
