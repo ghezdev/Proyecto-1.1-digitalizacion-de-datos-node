@@ -104,8 +104,8 @@ router.post('/add',async (req,res,next)=>{
                 next(err)
                 })
             })
+        res.sendStatus(200);
     }
-    res.sendStatus(200);
 });
 
 //Actualizar Alumno
