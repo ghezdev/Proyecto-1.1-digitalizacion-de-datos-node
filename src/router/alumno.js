@@ -122,7 +122,6 @@ router.post('/update',async(req,res,next)=>{
     } = req.body;
 
     const newAlumno={
-        dniAlumno,
         telefono,
         direccion,
         nombre,
@@ -130,19 +129,18 @@ router.post('/update',async(req,res,next)=>{
         repetidor,
         fechaNacimiento
     }
-    
-    await pool.query('UPDATE alumno SET ?',[newAlumno])
+
+    await pool.query('UPDATE alumno SET ? WHERE dniAlumno = ?',[newAlumno,dniAlumno])
     .catch(err=>{return new Promise(()=>{
         next(err)
         })
     });
 
     const fechaAltaSet={
-        dniAlumno,
         fechaAlta
     }
 
-    await pool.query('UPDATE fechas_activo_alumno SET ?',[fechaAltaSet])
+    await pool.query('UPDATE fechas_activo_alumno SET ? WHERE dniAlumno = ?',[fechaAltaSet,dniAlumno])
     .catch(err=>{return new Promise(()=>{
         next(err)
         })
