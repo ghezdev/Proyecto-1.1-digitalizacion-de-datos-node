@@ -149,14 +149,13 @@ router.post('/update',async(req,res,next) =>{
     } = req.body;
 
     const newCursada ={
-        idCursada,
         idDivision,
         idMateria,
         dniProfesor,
         tomarLista,
     }
-
-    await pool.query('UPDATE cursada SET ?',[newCursada])
+    
+    await pool.query('UPDATE cursada SET ? WHERE idCursada = ?',[newCursada,idCursada])
     .catch(err=>{return new Promise(()=>{
         next(err)
     })
