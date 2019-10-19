@@ -41,9 +41,9 @@ ON AlumInscripcion_ProfActa_Previa.idActa = Materia_Acta_Previa.idActa`)
     res.json(actaPrevias);
 });
 
-router.get('/:idActaPrevia',async(req, res, next) =>
+router.get('/:idActa',async(req, res, next) =>
 {
-    const {idActaPrevia} = req.body;
+    const {idActa} = req.params;
     const arrayActaPrevia = await pool.query( `
     SELECT AlumInscripcion_ProfActa_Previa.*, Materia_Acta_Previa.idMateria, Materia_Acta_Previa.situacion, Materia_Acta_Previa.fechaCierre, Materia_Acta_Previa.turno, Materia_Acta_Previa.titulo
     FROM (
@@ -69,13 +69,12 @@ router.get('/:idActaPrevia',async(req, res, next) =>
       ON Materia.idMateria = Acta_Previa.idMateria
     ) AS Materia_Acta_Previa
     ON AlumInscripcion_ProfActa_Previa.idActa = Materia_Acta_Previa.idActa
-    WHERE AlumInscripcion_ProfActa_Previa.idActa = ?`,[idActaPrevia])
+    WHERE AlumInscripcion_ProfActa_Previa.idActa = ?`,[idActa])
     .catch(err=>{return new Promise(()=>{
       next(err)
       })
   });
-
-  res.json(idActaPrevia);
+  res.json(arrayActaPrevia);
 });
 
 
@@ -120,12 +119,27 @@ router.post('/add',async(req, res, next) =>
 // Actualizar Acta previa
 router.post('/update',async(req, res, next) =>
 {
-    const {idActaPrevia, tipo, fechaCierre} = req.body;
+    const {
+      idActa, 
+      idMateria,
+      situacion,
+      turno
+    } = req.body;
     const newActaPrevia = {
-        tipo,
-        fechaCierre
+      idActa,
+      idMateria,
+      situacion,
+      turno
     }
-    await pool.query('UPDATE Acta_Previa SET ? WHERE idActaPrevia = ?', [newActaPrevia, idActaPrevia]);
+    await pool.query('UPDATE acta_previa SET ?', [newActaPrevia])
+    .catch(err=>{return new Promise(()=>{
+        console.log("Error 1")
+        console.log(err)
+        next(err)
+      })
+    });
+
+    res.sendStatus(200);
 });
 
 module.exports = router;
